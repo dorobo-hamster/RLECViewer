@@ -864,7 +864,7 @@ protected:
     baseClass::OnDestroy();
   }
 
-  afx_msg UINT OnNcHitTest(CPoint point)
+  afx_msg LRESULT OnNcHitTest(CPoint point)
   {
     UINT nHitCode = baseClass::OnNcHitTest(point);
     // Test Win95/98/me and Win NT 4.0
