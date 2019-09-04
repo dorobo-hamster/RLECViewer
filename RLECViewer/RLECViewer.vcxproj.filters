@@ -86,9 +86,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="res\RLECViewer.exe.manifest" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="res\default1.bin">
       <Filter>Resource Files</Filter>
     </CustomBuild>
