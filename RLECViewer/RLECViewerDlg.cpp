@@ -189,7 +189,7 @@ BOOL CRLECViewerDlg::OnInitDialog()
 		m_hThread = CreateThread(NULL, NULL, RLECThread, this, NULL, &dwThreadID);
 	}
 	
-	// ¶ÁÈ¡ÅäÖÃ  Read config
+	// è¯»å–é…ç½®  Read config
 	m_stAllInfo.bAutoMode = TRUE;
 	m_stAllInfo.bCoolOverLevel = TRUE;
 	m_stAllInfo.bAutoFanCount = FALSE;
@@ -414,7 +414,7 @@ BOOL CRLECViewerDlg::RLECProc2()
 		m_nStatus = EC_STATUS_RUNNING2;
 		int nSleepTime = 1000;
 
-		// ÉèÖÃ·çÉÈÊıÁ¿  Set fan amount
+		// è®¾ç½®é£æ‰‡æ•°é‡  Set fan amount
 		int nDelayCount = 0;
 		while (m_bExit == FALSE)
 		{
@@ -459,7 +459,7 @@ BOOL CRLECViewerDlg::RLECProc2()
 			}
 			else
 			{
-				// »ñÈ¡·çÉÈÊıÁ¿  Get fan amount
+				// è·å–é£æ‰‡æ•°é‡  Get fan amount
 				if (m_pfnGetFANCounter != NULL)
 				{
 					m_stFanInfo.nFanCount = m_pfnGetFANCounter();
@@ -721,7 +721,7 @@ void CRLECViewerDlg::OnTimer(UINT nIDEvent)
 					CString strTemp;
 					CString strVGAName;
 					strVGAName.Format("VGA%d", i);
-					strTemp.Format("%s£ºFan Speed: %d%%, Temp: %d C\n", i == 0 ? "CPU":strVGAName, (int)((float)m_stFanInfo.nFanDuty[i] * 100/255) + 1, m_stFanInfo.nFanTempRemote[i]);
+					strTemp.Format("%sï¼šFan Speed: %d%%, Temp: %d C\n", i == 0 ? "CPU":strVGAName, (int)((float)m_stFanInfo.nFanDuty[i] * 100/255) + 1, m_stFanInfo.nFanTempRemote[i]);
 					strTempDuty += strTemp;
 				}
 
@@ -787,7 +787,7 @@ void CRLECViewerDlg::OnCancel()
 	CDialog::OnCancel();
 }
 
-// ´Ó×¢²á±íÖĞ¶Á³ö×Ô¶¯ÔËĞĞÉèÖÃ	Read from registry
+// ä»æ³¨å†Œè¡¨ä¸­è¯»å‡ºè‡ªåŠ¨è¿è¡Œè®¾ç½®	Read from registry
 BOOL CRLECViewerDlg::SFReadAutoRunFromeReg()
 {
 	HKEY hKey;
@@ -864,16 +864,16 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 	int nFanDutyIdx = 0;
 	if (m_stAllInfo.bAutoMode)
 	{
-		int nMinTemp = 50;				// ×îµÍÎÂ¶È¿ªÊ¼µ÷½Ú  Min temp before fan speed adjustment
-		int nMaxDutyPer = 80;			// ×î¸ß¸ºÔØ80%×ªËÙ   Fan speed 80% at max load
-		int nMinDutyPer = 18;			// ×îµÍ¸ºÔØ18%×ªËÙ   Fan speed 18% at min load
+		int nMinTemp = 50;				// æœ€ä½æ¸©åº¦å¼€å§‹è°ƒèŠ‚  Min temp before fan speed adjustment
+		int nMaxDutyPer = 80;			// æœ€é«˜è´Ÿè½½80%è½¬é€Ÿ   Fan speed 80% at max load
+		int nMinDutyPer = 18;			// æœ€ä½è´Ÿè½½18%è½¬é€Ÿ   Fan speed 18% at min load
 		nCalcDutyPer = nMinDutyPer;
 
-		// µÍÓÚ×îµÍÎÂ¶ÈÔòÒÔ×îĞ¡×ªËÙÔËĞĞ  Below MinTemp, fan runs at min rmp
+		// ä½äºæœ€ä½æ¸©åº¦åˆ™ä»¥æœ€å°è½¬é€Ÿè¿è¡Œ  Below MinTemp, fan runs at min rmp
 		if (m_stFanInfo.nFanTempRemote[nFanIdx] <= nMinTemp)
 			return nMinDutyPer;
 
-		// ¼ÆËãÓëÎÂ¶ÈµÄ²î¾à  Calculate differences in temp
+		// è®¡ç®—ä¸æ¸©åº¦çš„å·®è·  Calculate differences in temp
 		int nOffsetLimit = m_stAllInfo.nTempLimit - nMinTemp;
 		int nOffsetReal	= m_stFanInfo.nFanTempRemote[nFanIdx] - nMinTemp;
 
@@ -949,13 +949,13 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 
 			if (nFanDutyIdx < m_nTargetFanIdx[nFanIdx] && nFanDutyIdx >= m_nCurFanIdx[nFanIdx])
 			{
-				// ½µÎÂÊ±Ğè¿çÔ½2¸ö¼¶±ğ  OverLevel cooling cross two levels
+				// é™æ¸©æ—¶éœ€è·¨è¶Š2ä¸ªçº§åˆ«  OverLevel cooling cross two levels
 				TRACE("[FanIdx %d] CalcDutyPer %d -> %d\n", nFanIdx, nCalcDutyPer, g_nAutoFanDuty[m_nCurFanIdx[nFanIdx]]);
 				nCalcDutyPer = g_nAutoFanDuty[m_nCurFanIdx[nFanIdx]];
 			}
 			else if (nFanDutyIdx >= m_nTargetFanIdx[nFanIdx])
 			{
-				// ÒÑ´ïµ½½µÎÂ¼¶±ğ  Cooling level reached
+				// å·²è¾¾åˆ°é™æ¸©çº§åˆ«  Cooling level reached
 				m_nCurFanIdx[nFanIdx] = -1;
 				m_nTargetFanIdx[nFanIdx] = -1;
 			}
@@ -963,9 +963,9 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 	}
 	else
 	{
-		// ¸ù¾İ·çÉÈÎÂ¶ÈÈ¡Öµ
+		// æ ¹æ®é£æ‰‡æ¸©åº¦å–å€¼
 		int nFanTemp = m_stFanInfo.nFanTempRemote[nFanIdx];
-		if (nFanTemp >= 85)	// 85¶È¼°ÒÔÉÏ   85C and above
+		if (nFanTemp >= 85)	// 85åº¦åŠä»¥ä¸Š   85C and above
 		{
 			nFanDutyIdx = 0;
 		}
@@ -1001,7 +1001,7 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 		{
 			nFanDutyIdx = 8;
 		}
-		else		// 40¶È¼°ÒÔÏÂ   40C and below
+		else		// 40åº¦åŠä»¥ä¸‹   40C and below
 		{
 			nFanDutyIdx = 9;
 		}
@@ -1011,13 +1011,13 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 		{
 			if (nFanDutyIdx < m_nTargetFanIdx[nFanIdx] && nFanDutyIdx >= m_nCurFanIdx[nFanIdx])
 			{
-				// ½µÎÂÊ±Ğè¿çÔ½2¸ö¼¶±ğ  OverLevel cooling cross two levels
+				// é™æ¸©æ—¶éœ€è·¨è¶Š2ä¸ªçº§åˆ«  OverLevel cooling cross two levels
 				TRACE("[FanIdx %d] CalcDutyPer %d -> %d\n", nFanIdx, nCalcDutyPer, m_stAllInfo.nFanDutyArray[nFanIdx][m_nCurFanIdx[nFanIdx]]);
 				nCalcDutyPer = m_stAllInfo.nFanDutyArray[nFanIdx][m_nCurFanIdx[nFanIdx]];
 			}
 			else if (nFanDutyIdx >= m_nTargetFanIdx[nFanIdx])
 			{
-				// ÒÑ´ïµ½½µÎÂ¼¶±ğ  OverLevel cooling reached
+				// å·²è¾¾åˆ°é™æ¸©çº§åˆ«  OverLevel cooling reached
 				m_nCurFanIdx[nFanIdx] = -1;
 				m_nTargetFanIdx[nFanIdx] = -1;
 			}
@@ -1026,10 +1026,10 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 	
 	if (m_stAllInfo.bCoolOverLevel)
 	{
-		// ÅĞ¶ÏÊÇÉıÎÂ»¹ÊÇ½µÎÂ
+		// åˆ¤æ–­æ˜¯å‡æ¸©è¿˜æ˜¯é™æ¸©
 		if (m_nLastFanTemp[nFanIdx] > m_stFanInfo.nFanTempRemote[nFanIdx])
 		{
-			// ½µÎÂ
+			// é™æ¸©
 			TRACE("[FanIdx %d] Temp dropping...\n", nFanIdx);
 			if (m_nTargetFanIdx[nFanIdx] < 0 && m_nCurFanIdx[nFanIdx] < 0)
 			{
@@ -1057,7 +1057,7 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 }
 
 //
-//½«ÏµÍ³ÉèÖÃĞÅÏ¢±£´æµ½ÎÄ¼şÖĞ
+//å°†ç³»ç»Ÿè®¾ç½®ä¿¡æ¯ä¿å­˜åˆ°æ–‡ä»¶ä¸­
 // Save config to file
 //
 BOOL CRLECViewerDlg::SFSaveINF()
@@ -1075,7 +1075,7 @@ BOOL CRLECViewerDlg::SFSaveINF()
 	return TRUE;
 }
 //
-//³õÊ¼»¯ÏµÍ³ĞÅÏ¢
+//åˆå§‹åŒ–ç³»ç»Ÿä¿¡æ¯
 // Init system info
 //
 BOOL CRLECViewerDlg::SFLoadINF(BOOL bWriteDefault)

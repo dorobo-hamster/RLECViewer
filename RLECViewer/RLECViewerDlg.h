@@ -79,9 +79,9 @@ protected:
 	HINSTANCE			m_hInstDLL2;
 	GetTempFanDuty2	*	m_pfnGetTempFanDuty2;
 
-	int					m_nLastFanTemp[RL_MAX_FAN];			// ¼ÇÂ¼×îºóÒ»´ÎÎÂ¶È
-	int					m_nCurFanIdx[RL_MAX_FAN];			// µ±Ç°·çÉÈ×ªËÙË÷Òı
-	int					m_nTargetFanIdx[RL_MAX_FAN];		// Ä¿±ê·çÉÈ×ªËÙË÷Òı
+	int					m_nLastFanTemp[RL_MAX_FAN];			// è®°å½•æœ€åä¸€æ¬¡æ¸©åº¦
+	int					m_nCurFanIdx[RL_MAX_FAN];			// å½“å‰é£æ‰‡è½¬é€Ÿç´¢å¼•
+	int					m_nTargetFanIdx[RL_MAX_FAN];		// ç›®æ ‡é£æ‰‡è½¬é€Ÿç´¢å¼•
 
 	// Generated message map functions
 	//{{AFX_MSG(CRLECViewerDlg)

@@ -49,9 +49,9 @@ typedef struct
 {
 	BOOL	bAutoMode;
 	BOOL	bAutoFanCount;
-	BOOL	bCoolOverLevel;			// 是否启用越级降温
+	BOOL	bCoolOverLevel;			// 鏄惁鍚敤瓒婄骇闄嶆俯
 	int		nTempLimit;
-	int		nFanCountManual;		// 手动设置风扇数量
+	int		nFanCountManual;		// 鎵嬪姩璁剧疆椋庢墖鏁伴噺
 	int		nFanDutyArray[RL_MAX_FAN][RL_FAN_LEVEL];
 }RLEC_CONFIG;
 
