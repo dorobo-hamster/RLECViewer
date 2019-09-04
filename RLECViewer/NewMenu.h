@@ -742,58 +742,12 @@ public:
     m_pFloatingFrameClass = RUNTIME_CLASS(CNewMiniDockFrameWnd);
   }
 
-private:
-  static const AFX_MSGMAP_ENTRY _messageEntries[];
+  DECLARE_MESSAGE_MAP()
 
-protected: 
-  static const AFX_MSGMAP messageMap;
-
+protected:
   BOOL m_bInMenuLoop;
   UINT m_TimerID;
   UINT m_menubarItemIndex;
-
-
-#if _MFC_VER < 0x0700 
-  static const AFX_MSGMAP* PASCAL _GetBaseMessageMap()
-  { 
-    return &baseClass::messageMap; 
-  };
-#else
-  static const AFX_MSGMAP* PASCAL GetThisMessageMap()
-  {
-    return &CNewFrame<baseClass>::messageMap; 
-  }
-#endif
-
-  virtual const AFX_MSGMAP* GetMessageMap() const 
-  {
-    return &CNewFrame<baseClass>::messageMap; 
-  }
-
-  static const AFX_MSGMAP_ENTRY* GetMessageEntries()
-  {
-    static const AFX_MSGMAP_ENTRY Entries[] =
-    {
-      ON_WM_MEASUREITEM()
-        ON_WM_MENUCHAR()
-        ON_WM_INITMENUPOPUP()
-        ON_WM_ENTERMENULOOP()
-        ON_WM_EXITMENULOOP() 
-        ON_WM_TIMER()
-        ON_WM_CREATE()
-        ON_WM_NCHITTEST()
-        ON_WM_DESTROY()
-        ON_WM_SYSCOLORCHANGE()
-#ifdef USE_NEW_DOCK_BAR
-        ON_WM_NCPAINT()
-        ON_WM_PAINT()
-        ON_WM_ACTIVATEAPP()
-        ON_WM_ACTIVATE()
-#endif //USE_NEW_DOCK_BAR
-      {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0 }
-    }; 
-    return Entries;
-  }
 
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct)
   {
@@ -1048,21 +1002,24 @@ protected:
 #endif
 };
 
-#ifndef _GUILIB_
-  #ifdef _AFXDLL
-    #if _MFC_VER < 0x0700 
-      template<class baseClass>
-      const AFX_MSGMAP CNewFrame<baseClass>::messageMap = { &CNewFrame<baseClass>::_GetBaseMessageMap, GetMessageEntries()};
-    #else
-      template<class baseClass>
-      const AFX_MSGMAP CNewFrame<baseClass>::messageMap = { &baseClass::GetThisMessageMap, GetMessageEntries()};
-    #endif
-  #else
-    template<class baseClass>
-    const AFX_MSGMAP CNewFrame<baseClass>::messageMap = { &baseClass::messageMap, GetMessageEntries()};
-  #endif // _AFXDLL
-#endif // _GUILIB_
-
+BEGIN_TEMPLATE_MESSAGE_MAP(CNewFrame, baseClass, baseClass)
+	ON_WM_MEASUREITEM()
+	ON_WM_MENUCHAR()
+	ON_WM_INITMENUPOPUP()
+	ON_WM_ENTERMENULOOP()
+	ON_WM_EXITMENULOOP()
+	ON_WM_TIMER()
+	ON_WM_CREATE()
+	ON_WM_NCHITTEST()
+	ON_WM_DESTROY()
+	ON_WM_SYSCOLORCHANGE()
+	#ifdef USE_NEW_DOCK_BAR
+	ON_WM_NCPAINT()
+	ON_WM_PAINT()
+	ON_WM_ACTIVATEAPP()
+	ON_WM_ACTIVATE()
+	#endif //USE_NEW_DOCK_BAR
+END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CNewMiniDockFrameWnd for docking toolbars with new menu
 
