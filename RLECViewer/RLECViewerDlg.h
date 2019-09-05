@@ -21,6 +21,9 @@ public:
 	CRLECViewerDlg(CWnd* pParent = NULL);	// standard constructor
 	RLEC_STATUS			m_stFanInfo;
 
+	vector<vector<int>> m_temperature_history;
+	int m_temperature_history_current[RL_MAX_FAN];
+
 // Dialog Data
 	//{{AFX_DATA(CRLECViewerDlg)
 	enum { IDD = IDD_RLECVIEWER_DIALOG };
@@ -51,6 +54,7 @@ private:
 	BOOL				SFLoadINF(BOOL bWriteDefault);
 
 	int					RLCalcManualFanDuty(int nFanIdx);
+	int					GetAverageTemperature(int nFanIdx);
 
 // Implementation
 protected:

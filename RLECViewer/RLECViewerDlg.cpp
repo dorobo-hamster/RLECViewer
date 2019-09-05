@@ -101,6 +101,7 @@ CRLECViewerDlg::CRLECViewerDlg(CWnd* pParent /*=NULL*/)
 	, m_bExit(FALSE)
 	, m_nStatus(0)
 	, m_hInstDLL2(NULL)
+	, m_temperature_history(RL_MAX_FAN, vector<int>(20, 0))
 {
 	//{{AFX_DATA_INIT(CRLECViewerDlg)
 	m_bAutoRun = FALSE;
@@ -111,6 +112,7 @@ CRLECViewerDlg::CRLECViewerDlg(CWnd* pParent /*=NULL*/)
 	memset(&m_stAllInfo, 0, sizeof(m_stAllInfo));
 	memset(m_nLastFanTemp, -1, sizeof(m_nLastFanTemp));
 	memset(m_nCurFanIdx, -1, sizeof(m_nCurFanIdx));
+	memset(&m_temperature_history_current, 0, sizeof(m_temperature_history_current));
 }
 
 void CRLECViewerDlg::DoDataExchange(CDataExchange* pDX)
@@ -412,7 +414,7 @@ BOOL CRLECViewerDlg::RLECProc2()
 		
 
 		m_nStatus = EC_STATUS_RUNNING2;
-		int nSleepTime = 1000;
+		int nSleepTime = 250;
 
 		// 设置风扇数量  Set fan amount
 		int nDelayCount = 0;
@@ -490,12 +492,14 @@ BOOL CRLECViewerDlg::RLECProc2()
 				{
 					if (m_pfnGetTempFanDuty2 != NULL)
 					{
-						TRACE("[GetTempFanDuty %d] Start...\n", i);
 						ECData2 stECData = m_pfnGetTempFanDuty2(i + 1);
-						TRACE("[GetTempFanDuty %d] End...\n", i);
 						m_stFanInfo.nFanDuty[i] = stECData.FanDuty;
 						m_stFanInfo.nFanTempRemote[i] = stECData.Remote;
+						m_temperature_history[i][m_temperature_history_current[i]] = stECData.Remote;
+						m_temperature_history_current[i] = (m_temperature_history_current[i] + 1) % (m_temperature_history[i].size());
 						m_stFanInfo.nFanTempLocal[i] = stECData.Local;
+						if (i==0)
+						TRACE("[GetTempFanDuty %d] Remote: %d, Local: %d, Average: %d\n", i, stECData.Remote, stECData.Local, GetAverageTemperature(i));
 						Sleep(nSleepTime);
 					}
 				}
@@ -870,12 +874,14 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 		nCalcDutyPer = nMinDutyPer;
 
 		// 低于最低温度则以最小转速运行  Below MinTemp, fan runs at min rmp
-		if (m_stFanInfo.nFanTempRemote[nFanIdx] <= nMinTemp)
+		int nFanTemp = GetAverageTemperature(nFanIdx);
+
+		if (nFanTemp <= nMinTemp)
 			return nMinDutyPer;
 
 		// 计算与温度的差距  Calculate differences in temp
 		int nOffsetLimit = m_stAllInfo.nTempLimit - nMinTemp;
-		int nOffsetReal	= m_stFanInfo.nFanTempRemote[nFanIdx] - nMinTemp;
+		int nOffsetReal	= nFanTemp - nMinTemp;
 
 		int OffsetPer = (int)(((float)nOffsetReal/(float)nOffsetLimit) * 100);
 		if (OffsetPer >= 130)
@@ -964,7 +970,7 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 	else
 	{
 		// 根据风扇温度取值
-		int nFanTemp = m_stFanInfo.nFanTempRemote[nFanIdx];
+		int nFanTemp = GetAverageTemperature(nFanIdx);
 		if (nFanTemp >= 85)	// 85度及以上   85C and above
 		{
 			nFanDutyIdx = 0;
@@ -1054,6 +1060,25 @@ int CRLECViewerDlg::RLCalcManualFanDuty(int nFanIdx)
 	m_nLastFanTemp[nFanIdx] = m_stFanInfo.nFanTempRemote[nFanIdx];
 	
 	return nCalcDutyPer;
+}
+
+int CRLECViewerDlg::GetAverageTemperature(int nFanIdx)
+{
+	auto total = 0;
+	auto zeroes = 0;
+
+	for (auto v : m_temperature_history[nFanIdx]) {
+		total += v;
+
+		if (v == 0)
+			zeroes++;
+	}
+
+	auto nonZeroes = m_temperature_history[nFanIdx].size() - zeroes;
+	if (nonZeroes == 0)
+		return 0;
+
+	return total / nonZeroes;
 }
 
 //
